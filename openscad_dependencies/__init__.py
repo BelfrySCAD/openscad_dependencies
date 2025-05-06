@@ -5,7 +5,6 @@ from arpeggio import PTNodeVisitor, visit_parse_tree, NoMatch
 import os
 import os.path
 import platform
-from pprint import pprint
 
 
 class ItemDecl():
@@ -13,7 +12,6 @@ class ItemDecl():
         self.name = name
         self.args = args
         self.file = file
-        
 
 
 class OpenSCADDependencyVisitor(PTNodeVisitor):
@@ -28,23 +26,33 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
         self.builtin_funcs = {}
         self.builtin_modules = {}
         for name in [
-                "concat", "lookup", "str", "chr", "ord", "search", "version", "version_num", "parent_module",
-                "abs", "sign", "sin", "cos", "tan", "acos", "asin", "atan", "atan2", "floor", "round", "ceil",
-                "ln", "len", "let", "log", "pow", "sqrt", "exp", "rands", "min", "max", "norm", "cross",
-                "is_undef", "is_bool", "is_num", "is_string", "is_list", "is_function", "text_metrics",
-                ]:
+            "concat", "lookup", "str", "chr", "ord", "search", "version",
+            "version_num", "parent_module", "abs", "sign", "sin", "cos",
+            "tan", "acos", "asin", "atan", "atan2", "floor", "round",
+            "ceil", "ln", "len", "let", "log", "pow", "sqrt", "exp",
+            "rands", "min", "max", "norm", "cross", "is_undef",
+            "is_bool", "is_num", "is_string", "is_list", "is_function",
+            "text_metrics",
+        ]:
             self.builtin_funcs[name] = 1
         for name in [
-                "render", "children", "circle", "square", "polygon", "text", "import", "projection",
-                "sphere", "cube", "cylinder", "polyhedron", "linear_extrude", "rotate_extrude", "surface", "roof",
-                "translate", "rotate", "scale", "resize", "mirror", "multmatrix", "color", "offset", "hull", "minkowski",
-                "union", "difference", "intersection",
-                ]:
+            "render", "children", "circle", "square", "polygon", "text",
+            "import", "projection", "sphere", "cube", "cylinder",
+            "polyhedron", "linear_extrude", "rotate_extrude", "surface",
+            "roof", "translate", "rotate", "scale", "resize", "mirror",
+            "multmatrix", "color", "offset", "hull", "minkowski", "union",
+            "difference", "intersection",
+        ]:
             self.builtin_modules[name] = 1
 
     def get_results(self):
         out = "External References:\n"
-        files = sorted(list(set(list(self.func_calls.keys()) + list(self.mod_calls.keys()))))
+        files = sorted(
+            list(set(
+                list(self.func_calls.keys()) +
+                list(self.mod_calls.keys())
+            ))
+        )
         for file in files:
             ext_funcs = []
             if file in self.func_calls:
@@ -66,23 +74,25 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
             ext_mods = list(set(ext_mods))
             ext_mods.sort()
             if ext_funcs or ext_mods:
-                out += "  File: {}\n".format(file)
+                out += "File: {}\n".format(file)
             if ext_funcs:
-                out += "    Function Calls:\n"
+                out += "  Function Calls:\n"
                 for name in ext_funcs:
                     item = self.functions.get(name, None)
                     if item is None:
                         out += "      {}() undefined\n".format(name)
                     else:
-                        out += "      {}() defined in {}\n".format(name, item.file)
+                        out += "      {}() defined in {}\n".format(
+                            name, item.file)
             if ext_mods:
-                out += "    Module Calls:\n"
+                out += "  Module Calls:\n"
                 for name in ext_mods:
                     item = self.modules.get(name, None)
                     if item is None:
                         out += "      {}() undefined\n".format(name)
                     else:
-                        out += "      {}() defined in {}\n".format(name, item.file)
+                        out += "      {}() defined in {}\n".format(
+                            name, item.file)
         return out
 
     def _find_libfile(self, currfile, libfile):
@@ -109,8 +119,10 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
         return None
 
     def _print_syntax_error(self, file, e):
-        snippet = e.parser.input[e.position-e.col+1:].split("\n")[0] + "\n" + " "*(e.col-1) + "^"
-        print("Syntax Error at {}, line {}, col {}:\n{}".format(file, e.line, e.col, snippet))
+        snippet = e.parser.input[e.position-e.col+1:].split("\n")[0] + \
+            "\n" + " "*(e.col-1) + "^"
+        print("Syntax Error at {}, line {}, col {}:\n{}".format(
+            file, e.line, e.col, snippet))
 
     def visit_use_stmt(self, node, children):
         oldfile = self.current_file
@@ -165,7 +177,8 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
             if name not in self.builtin_modules:
                 if self.current_file not in self.mod_calls:
                     self.mod_calls[self.current_file] = {}
-                self.mod_calls[self.current_file][name] = ItemDecl(name, args, self.current_file)
+                self.mod_calls[self.current_file][name] = \
+                    ItemDecl(name, args, self.current_file)
         return node
 
     def visit_prec_call(self, node, children):
@@ -175,7 +188,8 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
             if name not in self.builtin_funcs:
                 if self.current_file not in self.func_calls:
                     self.func_calls[self.current_file] = {}
-                self.func_calls[self.current_file][name] = ItemDecl(name, args, self.current_file)
+                self.func_calls[self.current_file][name] = \
+                    ItemDecl(name, args, self.current_file)
         return node
 
     def visit_parameter(self, node, children):
@@ -202,32 +216,54 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
     def visit_lookup_expr(self, node, children):
         return None
 
-    def visit_lookup_expr(self, node, children):
+    def visit_member_expr(self, node, children):
         return None
 
     def visit_call_expr(self, node, children):
         return node
 
 
+def print_tree(node, level=0):
+    indent = "  " * level
+    if isinstance(node, list):
+        print(indent + "[")
+        for n in node:
+            print_tree(n, level + 1)
+        print(indent + "]")
+    elif isinstance(node, tuple):
+        print(indent + "(")
+        for n in node:
+            print_tree(n, level + 1)
+        print(indent + ")")
+    else:
+        print(indent + "'" + str(node) + "'")
+        if hasattr(node, ' value'):
+            print(indent + "value: " + str(node.value))
+        if hasattr(node, ' children'):
+            print(indent + "children: ")
+            for n in node.children:
+                print_tree(n, level + 1)
+
+
 def main():
     parser = argparse.ArgumentParser(prog='openscad_depends')
-    parser.add_argument('file', nargs="1", help='Input file.')
+    parser.add_argument('file', help='Input file.')
     opts = parser.parse_args()
 
-    parser = getOpenSCADParser()
+    parser = getOpenSCADParser(reduce_tree=True, debug=False)
     visitor = OpenSCADDependencyVisitor(debug=False, parser=parser)
-    for file in opts.files:
-        try:
-            with open(file, 'r') as f:
-                visitor.current_file = file
-                parse_tree = parser.parse(f.read())
-                visit_parse_tree(parse_tree, visitor)
-        except NoMatch as e:
-            visitor._print_syntax_error(file, e)
+    try:
+        with open(opts.file, 'r') as f:
+            visitor.current_file = opts.file
+            parse_tree = parser.parse(f.read())
+            print_tree(parse_tree)
+            visit_parse_tree(parse_tree, visitor)
+    except NoMatch as e:
+        visitor._print_syntax_error(opts.file, e)
     print(visitor.get_results())
+
 
 if __name__ == "__main__":
     main()
 
-
-
+# vim: set ts=4 sw=4 expandtab:
