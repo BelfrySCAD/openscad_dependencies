@@ -177,4 +177,5 @@ cython_debug/
 foo.py
 int.py
 *.scad
+*.dot
 
