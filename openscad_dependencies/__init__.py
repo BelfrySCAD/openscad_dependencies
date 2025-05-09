@@ -256,7 +256,7 @@ def main():
         with open(opts.file, 'r') as f:
             visitor.current_file = opts.file
             parse_tree = parser.parse(f.read())
-            print_tree(parse_tree)
+            # print_tree(parse_tree)
             visit_parse_tree(parse_tree, visitor)
     except NoMatch as e:
         visitor._print_syntax_error(opts.file, e)
