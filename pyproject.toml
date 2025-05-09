@@ -47,5 +47,5 @@ dependencies = [
 "Usage" = "https://github.com/belfryscad/openscad_dependencies/README.rst"
 
 [project.scripts]
-openscad_dependencies = "openscad_dependencies:main"
+openscad-dependencies = "openscad_dependencies:main"
 

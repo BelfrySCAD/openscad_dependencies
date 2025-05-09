@@ -29,10 +29,11 @@ following command:
 
 .. code-block:: bash
 
-    openscad_dependencies [options] <input_file>
+    openscad-dependencies [options] <input_file>
 
 Here:
-- `<input_file>`: The path to the base .scad file whose dependencies you want to analyze.
+- `<input_file>`: The path to the base .scad file whose dependencies
+you want to analyze.
 - `[options]`: Optional flags to customize the behavior of the tool.
 
 Options
@@ -47,7 +48,7 @@ Examples
 
    .. code-block:: bash
 
-       openscad_dependencies my_model.scad
+       openscad-dependencies my_model.scad
 
 
 
@@ -58,5 +59,5 @@ For more information, run:
 
 .. code-block:: bash
 
-    openscad_dependencies --help
+    openscad-dependencies --help
 
