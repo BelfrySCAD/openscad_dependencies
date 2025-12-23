@@ -1,0 +1,11 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "extraPaths": [
+    ".venv/lib/python3.10/site-packages",
+    "/Users/gminette/dev/git-repos/openscad_parser"
+  ],
+  "pythonVersion": "3.10"
+}
+
+

@@ -178,4 +178,5 @@ foo.py
 int.py
 *.scad
 *.dot
+*.egg-info/
 
