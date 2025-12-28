@@ -35,8 +35,8 @@ classifiers = [
 ]
 keywords = ["openscad", "openscad dependencies", "dependencies"]
 dependencies = [
-    "arpeggio>=2.0.2",
-    "openscad_parser>=0.9.0",
+    "arpeggio>=2.0.3",
+    "openscad_parser>=0.9.2",
 ]
 
 [project.urls]
