@@ -248,9 +248,9 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
             self.load_stack.append(self.current_file)
             with open(self.current_file, 'r') as f:
                 self.register_file(self.current_file)
-                if self.parser is None:
-                    raise ValueError("Parser is not initialized")
-                parse_tree = self.parser.parse(f.read())
+                # Create fresh parser to avoid memoization state accumulation
+                fresh_parser = getOpenSCADParser(reduce_tree=False, debug=False)
+                parse_tree = fresh_parser.parse(f.read())
                 visit_parse_tree(parse_tree, self)
         except NoMatch as e:
             self._print_syntax_error(self.current_file, e)
@@ -280,9 +280,9 @@ class OpenSCADDependencyVisitor(PTNodeVisitor):
             self.load_stack.append(self.current_file)
             with open(self.current_file, 'r') as f:
                 self.register_file(self.current_file)
-                if self.parser is None:
-                    raise ValueError("Parser is not initialized")
-                parse_tree = self.parser.parse(f.read())
+                # Create fresh parser to avoid memoization state accumulation
+                fresh_parser = getOpenSCADParser(reduce_tree=False, debug=False)
+                parse_tree = fresh_parser.parse(f.read())
                 visit_parse_tree(parse_tree, self)
         except NoMatch as e:
             self._print_syntax_error(self.current_file, e)
